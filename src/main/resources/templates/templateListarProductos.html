@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Listado de Productos</title>
+    <!-- CSS de Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Listado de Productos</h2>
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Marca</th>
+            <th>Precio</th>
+            <th>Categoria</th>
+            <th>Stock</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Iterar a través de la lista de productos -->
+        <tr th:each="producto : ${atributoListarProductos}">
+            <td th:text="${producto.productoId}"></td>
+            <td th:text="${producto.nombre}"></td>
+            <td th:text="${producto.marca}"></td>
+            <td th:text="${producto.precio}"></td>
+            <td th:text="${producto.categoria}"></td>
+            <td th:text="${producto.cantidadEnStock}"></td>
+            <td>
+                <!-- Enlaces para editar y eliminar un producto -->
+                <a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editarProductoModal" data-producto-id="${producto.id}">
+                    Editar
+                </a>
+
+                <!-- Modal para edición de producto -->
+                <div class="modal fade" id="editarProductoModal" tabindex="-1" role="dialog" aria-labelledby="editarProductoModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editarProductoModalLabel">Editar Producto</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Formulario de edición de producto -->
+                                <form th:action="@{/productos/editar/{id}(id=${producto.productoId})}" method="post">
+                                    <div class="form-group">
+                                        <label for="nombre">Nombre:</label>
+                                        <input type="text" class="form-control" id="nombre" name="nombre" th:value="${producto.nombre}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="precio">Precio:</label>
+                                        <input type="number" class="form-control" id="precio" name="precio" step="0.01" th:value="${producto.precio}" required>
+                                    </div>
+                                    <!-- Agrega más campos de edición según tus necesidades -->
+                                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botón para eliminar producto con modal de confirmación -->
+                <a href="#" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#eliminarProductoModal" data-producto-id="${producto.id}">
+                    Eliminar
+                </a>
+                <!-- Modal de confirmación de eliminación -->
+                <div class="modal fade" id="eliminarProductoModal" tabindex="-1" role="dialog" aria-labelledby="eliminarProductoModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="eliminarProductoModalLabel">Confirmación de Eliminación</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                ¿Estás seguro de que deseas eliminar este producto?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                <!-- Formulario de confirmación de eliminación -->
+                                <form th:action="@{/productos/eliminar/{id}(id=${producto.productoId})}" method="post">
+                                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <!-- Botón para abrir el modal de creación de producto -->
+    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#crearProductoModal">
+        Crear Nuevo Producto
+    </button>
+
+    <!-- Modal de creación de producto -->
+    <div class="modal fade" id="crearProductoModal" tabindex="-1" role="dialog" aria-labelledby="crearProductoModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="crearProductoModalLabel">Crear Nuevo Producto</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Formulario para crear un nuevo producto -->
+                    <form th:action="@{/productos/crear}" method="post">
+                        <div class="form-group">
+                            <label for="nombre">Nombre:</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="precio">Precio:</label>
+                            <input type="number" class="form-control" id="precio" name="precio" step="0.01" required>
+                        </div>
+                        <!-- Agrega más campos del formulario según tus necesidades -->
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="container">
+    <h2>Buscador de Productos</h2>
+    <input type="text" id="searchInput" placeholder="Buscar por nombre de producto">
+    <table id="productosTable" class="display" style="width:100%">
+        <thead>
+        <tr>
+            <th>Nombre Producto</th>
+            <th>Cantidad</th>
+            <th>Categoría</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Aquí se cargarán los datos de los productos -->
+        </tbody>
+    </table>
+</div>
+<br>
+<br>
+<br>
+<script>
+    $(document).ready(function () {
+        var table = $('#producto').DataTable({
+            "ajax": "/api/producto", // Endpoint para cargar los datos desde el servidor
+            "columns": [
+                { "data": "nombreProducto" },
+                { "data": "cantidad" },
+                { "data": "categoria" }
+            ]
+        });
+
+        // Se configura el filtro de búsqueda
+        $('#searchInput').on('keyup', function () {
+            table.search(this.value).draw();
+        });
+    });
+</script>
+
+
+<!-- Links  JavaScript de Bootstrap y jQuery  -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+</body>
+</html>
